@@ -19,7 +19,7 @@ const PORT = process.env.PORT || 8000;
 // Middleware
 app.use(express.json());
 app.use(cors({
-    origin: 'http://localhost:5173', // Frontend URL
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173', // Dynamic CORS for production
     credentials: true // Allow cookies to be sent
 }));
 app.use(cookieParser());
@@ -31,6 +31,12 @@ app.use('/api/login', loginRoute);
 // Protected Routes (require authentication)
 app.use('/api/history', authMiddleware, historyRoute);
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+// Only start listening if not in Vercel serverless environment
+if (process.env.VERCEL !== '1') {
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+}
+
+// Export for Vercel serverless
+export default app;
