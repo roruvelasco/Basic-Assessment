@@ -31,12 +31,11 @@ app.use('/api/login', loginRoute);
 // Protected Routes (require authentication)
 app.use('/api/history', authMiddleware, historyRoute);
 
-// Only start listening if not in Vercel serverless environment
-if (process.env.VERCEL !== '1') {
-    app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
-    });
-}
+// Start server (Vercel handles this differently in serverless)
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
 
 // Export for Vercel serverless
 export default app;
+
