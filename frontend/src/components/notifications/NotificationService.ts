@@ -63,31 +63,24 @@ export const showNotification = (options: NotificationOptions): string => {
 };
 
 /**
- * Show a success notification
+ * Show a success notification (green)
  */
 export const showSuccess = (title: string, message: string): string => {
     return showNotification({ title, message, type: 'success' });
 };
 
 /**
- * Show an error notification
+ * Show an error notification (red)
  */
 export const showError = (title: string, message: string): string => {
     return showNotification({ title, message, type: 'danger' });
 };
 
 /**
- * Show a warning notification
- */
-export const showWarning = (title: string, message: string): string => {
-    return showNotification({ title, message, type: 'warning' });
-};
-
-/**
- * Show an info notification
+ * Show an info notification (green - same as success for simplicity)
  */
 export const showInfo = (title: string, message: string): string => {
-    return showNotification({ title, message, type: 'info' });
+    return showNotification({ title, message, type: 'success' });
 };
 
 /**

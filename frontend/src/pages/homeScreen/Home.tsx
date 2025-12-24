@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { geolocationService, isValidIPAddress } from '../../services/geolocationService';
-import { historyService } from '../../services/historyService';
+import { historyService, type HistoryEntry } from '../../services/historyService';
 import { authService } from '../../services/authService';
 import { showError, showSuccess, showInfo } from '../../components/notifications/NotificationService';
 import LocationCard from '../../components/LocationCard';
 import LocationMap from '../../components/LocationMap';
+import HistoryList from '../../components/HistoryList';
 import type { IGeolocation } from '../../interfaces/IGeolocation';
 
 /**
@@ -24,6 +25,7 @@ const Home: React.FC<HomeProps> = ({ onLogout }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [isSearching, setIsSearching] = useState(false);
     const [isShowingSearchResult, setIsShowingSearchResult] = useState(false);
+    const [historyRefreshTrigger, setHistoryRefreshTrigger] = useState(0);
 
     useEffect(() => {
         fetchCurrentLocation();
@@ -77,6 +79,8 @@ const Home: React.FC<HomeProps> = ({ onLogout }) => {
                     postal: location.postal,
                     timezone: location.timezone
                 });
+                // Trigger history list refresh
+                setHistoryRefreshTrigger(prev => prev + 1);
                 showSuccess('Search Complete', `Found location for ${trimmedIP}`);
             } catch {
                 showInfo('Search Complete', 'Location found (history save failed)');
@@ -106,6 +110,25 @@ const Home: React.FC<HomeProps> = ({ onLogout }) => {
         await authService.logout();
         onLogout();
     };
+
+    // Handle clicking a history item to re-display that location
+    const handleSelectHistory = useCallback((entry: HistoryEntry) => {
+        const location: IGeolocation = {
+            ip: entry.ip,
+            city: entry.city,
+            region: entry.region,
+            country: entry.country,
+            latitude: entry.latitude,
+            longitude: entry.longitude,
+            org: entry.org,
+            postal: entry.postal,
+            timezone: entry.timezone,
+        };
+        setDisplayedLocation(location);
+        setSearchIP(entry.ip);
+        setIsShowingSearchResult(true);
+        showInfo('History Loaded', `Showing location for ${entry.ip}`);
+    }, []);
 
     const formatCoordinates = (location: IGeolocation): string => {
         if (location.latitude && location.longitude) {
@@ -232,6 +255,12 @@ const Home: React.FC<HomeProps> = ({ onLogout }) => {
                             city={displayedLocation.city}
                             country={displayedLocation.country}
                             ip={displayedLocation.ip}
+                        />
+
+                        {/* Search History */}
+                        <HistoryList
+                            refreshTrigger={historyRefreshTrigger}
+                            onSelectHistory={handleSelectHistory}
                         />
                     </>
                 ) : (
