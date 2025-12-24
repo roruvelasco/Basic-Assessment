@@ -26,9 +26,15 @@ const Home: React.FC<HomeProps> = ({ onLogout }) => {
     const [isSearching, setIsSearching] = useState(false);
     const [isShowingSearchResult, setIsShowingSearchResult] = useState(false);
     const [historyRefreshTrigger, setHistoryRefreshTrigger] = useState(0);
+    const [userEmail, setUserEmail] = useState<string>('');
 
     useEffect(() => {
         fetchCurrentLocation();
+        // Get user email from session
+        const user = authService.getCurrentUser();
+        if (user?.email) {
+            setUserEmail(user.email);
+        }
     }, []);
 
     const fetchCurrentLocation = async () => {
@@ -152,12 +158,18 @@ const Home: React.FC<HomeProps> = ({ onLogout }) => {
                         <h1 className="text-3xl font-semibold text-white">IP Geolocation</h1>
                         <p className="text-slate-400 mt-1">Search and view IP location data</p>
                     </div>
-                    <button
-                        onClick={handleLogout}
-                        className="px-4 py-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-all"
-                    >
-                        Logout
-                    </button>
+                    <div className="flex items-center gap-3">
+                        {userEmail && (
+                            <span className="text-slate-400 text-sm hidden sm:block">{userEmail}</span>
+                        )}
+                        <span className="text-slate-600 hidden sm:block">|</span>
+                        <button
+                            onClick={handleLogout}
+                            className="px-4 py-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-all"
+                        >
+                            Logout
+                        </button>
+                    </div>
                 </div>
 
                 {/* Search Section */}
@@ -219,16 +231,6 @@ const Home: React.FC<HomeProps> = ({ onLogout }) => {
                     <>
                         {/* Location Info Card */}
                         <div className="bg-slate-800/80 border border-slate-700 rounded-2xl p-6 mb-6 backdrop-blur-sm">
-                            {/* Status Badge */}
-                            <div className="flex items-center gap-2 mb-6">
-                                <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                                    isShowingSearchResult 
-                                        ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' 
-                                        : 'bg-green-500/20 text-green-400 border border-green-500/30'
-                                }`}>
-                                    {isShowingSearchResult ? 'Search Result' : 'Your Location'}
-                                </span>
-                            </div>
 
                             {/* IP Address Header */}
                             <div className="mb-6">

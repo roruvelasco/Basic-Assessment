@@ -1,6 +1,6 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import { ReactNotifications } from 'react-notifications-component';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import 'react-notifications-component/dist/theme.css';
 import 'animate.css/animate.min.css';
 
@@ -19,66 +19,74 @@ const LoadingScreen: React.FC = () => (
 
 /**
  * Main App Component
+ * Uses createBrowserRouter for modern React Router v6.4+ data APIs
  */
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
+    const handleLoginSuccess = useCallback(() => {
+        setIsAuthenticated(true);
+    }, []);
+
+    const handleLogout = useCallback(() => {
+        setIsAuthenticated(false);
+        sessionStorage.removeItem('user');
+    }, []);
+
     useEffect(() => {
+        const checkAuthentication = async () => {
+            try {
+                const result = await authService.checkAuth();
+                setIsAuthenticated(result.authenticated);
+                if (result.authenticated && result.user) {
+                    sessionStorage.setItem('user', JSON.stringify(result.user));
+                }
+            } catch {
+                setIsAuthenticated(false);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
         checkAuthentication();
     }, []);
 
-    const checkAuthentication = async () => {
-        try {
-            const result = await authService.checkAuth();
-            setIsAuthenticated(result.authenticated);
-        } catch {
-            setIsAuthenticated(false);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
     // Show loading while checking auth
     if (isLoading) {
-        return <LoadingScreen />;
+        return (
+            <>
+                <ReactNotifications />
+                <LoadingScreen />
+            </>
+        );
     }
 
+    // Create router with object-based route definitions
+    const router = createBrowserRouter([
+        {
+            path: '/',
+            element: isAuthenticated 
+                ? <Navigate to="/home" replace /> 
+                : <Login onLoginSuccess={handleLoginSuccess} />,
+        },
+        {
+            path: '/home',
+            element: isAuthenticated 
+                ? <Home onLogout={handleLogout} /> 
+                : <Navigate to="/" replace />,
+        },
+        {
+            path: '*',
+            element: <Navigate to={isAuthenticated ? '/home' : '/'} replace />,
+        },
+    ]);
+
     return (
-        <Router>
-            <div className="app-container">
-                <ReactNotifications />
-                <Routes>
-                    {/* Login - redirects to home if authenticated */}
-                    <Route
-                        path="/"
-                        element={
-                            isAuthenticated
-                                ? <Navigate to="/home" replace />
-                                : <Login onLoginSuccess={() => setIsAuthenticated(true)} />
-                        }
-                    />
-                    
-                    {/* Home - requires authentication */}
-                    <Route
-                        path="/home"
-                        element={
-                            isAuthenticated
-                                ? <Home onLogout={() => setIsAuthenticated(false)} />
-                                : <Navigate to="/" replace />
-                        }
-                    />
-                    
-                    {/* Catch all */}
-                    <Route
-                        path="*"
-                        element={
-                            <Navigate to={isAuthenticated ? "/home" : "/"} replace />
-                        }
-                    />
-                </Routes>
-            </div>
-        </Router>
+        <div className="app-container">
+            <ReactNotifications />
+            <RouterProvider router={router} />
+        </div>
     );
 }
 
