@@ -1,43 +1,39 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { authService } from '../../services/authService';
 import { showError, showSuccess } from '../../components/notifications/NotificationService';
 
 /**
- * Login Page Component
- * Responsive login form with email and password validation
+ * Login Props
  */
-const Login: React.FC = () => {
-    const navigate = useNavigate();
+interface LoginProps {
+    onLoginSuccess: () => void;
+}
+
+/**
+ * Login Page Component
+ */
+const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    /**
-     * Handle form submission
-     */
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
 
         try {
-            // Clean API call using authService
-            const data = await authService.login({ email, password });
-
-            // Store auth data
-            authService.setAuthData(data.token, data.user);
-            
-            // Show success notification
+            await authService.login({ email, password });
             showSuccess('Welcome!', 'Login successful');
             
-            // Redirect to home screen after a short delay
+            // Notify parent that login was successful
             setTimeout(() => {
-                navigate('/home');
-            }, 1000);
+                onLoginSuccess();
+            }, 500);
 
-        } catch (err: any) {
-            const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
+        } catch (err: unknown) {
+            const error = err as { response?: { data?: { message?: string } }; message?: string };
+            const errorMessage = error.response?.data?.message || error.message || 'An error occurred';
             showError('Login Failed', errorMessage);
         } finally {
             setIsLoading(false);

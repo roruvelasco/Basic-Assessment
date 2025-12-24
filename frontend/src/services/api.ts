@@ -2,7 +2,6 @@ import axios from 'axios';
 
 /**
  * API Base Configuration
- * Centralized axios instance with interceptors for all API calls
  */
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
@@ -10,40 +9,24 @@ const api = axios.create({
     headers: {
         'Content-Type': 'application/json',
     },
+    withCredentials: true, // Enable sending cookies with requests
 });
 
 /**
  * Request Interceptor
- * Automatically attaches auth token to all requests
  */
 api.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
-    }
+    (config) => config,
+    (error) => Promise.reject(error)
 );
 
 /**
  * Response Interceptor
- * Handles global error responses (e.g., 401 unauthorized)
+ * Does NOT auto-redirect on 401 - let the app handle auth state
  */
 api.interceptors.response.use(
     (response) => response,
-    (error) => {
-        if (error.response?.status === 401) {
-            // Token expired or invalid - clear and redirect
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            window.location.href = '/login';
-        }
-        return Promise.reject(error);
-    }
+    (error) => Promise.reject(error)
 );
 
 export default api;

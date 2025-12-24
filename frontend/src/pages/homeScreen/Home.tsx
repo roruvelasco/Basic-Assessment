@@ -1,17 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { geolocationService, isValidIPAddress } from '../../services/geolocationService';
 import { historyService } from '../../services/historyService';
+import { authService } from '../../services/authService';
 import { showError, showSuccess, showInfo } from '../../components/notifications/NotificationService';
 import LocationCard from '../../components/LocationCard';
+import LocationMap from '../../components/LocationMap';
 import type { IGeolocation } from '../../interfaces/IGeolocation';
 
 /**
- * Home Screen Component
- * Displays IP geolocation data with search functionality
+ * Home Props
  */
-const Home: React.FC = () => {
-    const navigate = useNavigate();
+interface HomeProps {
+    onLogout: () => void;
+}
+
+/**
+ * Home Screen Component
+ */
+const Home: React.FC<HomeProps> = ({ onLogout }) => {
     const [currentLocation, setCurrentLocation] = useState<IGeolocation | null>(null);
     const [displayedLocation, setDisplayedLocation] = useState<IGeolocation | null>(null);
     const [searchIP, setSearchIP] = useState('');
@@ -58,7 +64,19 @@ const Home: React.FC = () => {
             setIsShowingSearchResult(true);
 
             try {
-                await historyService.addHistory(trimmedIP, location);
+                // Save to history with IPinfo format
+                await historyService.addHistory({
+                    ip: location.ip,
+                    city: location.city,
+                    region: location.region,
+                    country: location.country,
+                    loc: location.latitude && location.longitude 
+                        ? `${location.latitude},${location.longitude}` 
+                        : undefined,
+                    org: location.org,
+                    postal: location.postal,
+                    timezone: location.timezone
+                });
                 showSuccess('Search Complete', `Found location for ${trimmedIP}`);
             } catch {
                 showInfo('Search Complete', 'Location found (history save failed)');
@@ -84,10 +102,9 @@ const Home: React.FC = () => {
         }
     };
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        navigate('/');
+    const handleLogout = async () => {
+        await authService.logout();
+        onLogout();
     };
 
     const formatCoordinates = (location: IGeolocation): string => {
@@ -176,35 +193,47 @@ const Home: React.FC = () => {
                         </div>
                     </div>
                 ) : displayedLocation ? (
-                    <div className="bg-slate-800/80 border border-slate-700 rounded-2xl p-6 backdrop-blur-sm">
-                        {/* Status Badge */}
-                        <div className="flex items-center gap-2 mb-6">
-                            <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                                isShowingSearchResult 
-                                    ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' 
-                                    : 'bg-green-500/20 text-green-400 border border-green-500/30'
-                            }`}>
-                                {isShowingSearchResult ? 'Search Result' : 'Your Location'}
-                            </span>
+                    <>
+                        {/* Location Info Card */}
+                        <div className="bg-slate-800/80 border border-slate-700 rounded-2xl p-6 mb-6 backdrop-blur-sm">
+                            {/* Status Badge */}
+                            <div className="flex items-center gap-2 mb-6">
+                                <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                                    isShowingSearchResult 
+                                        ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' 
+                                        : 'bg-green-500/20 text-green-400 border border-green-500/30'
+                                }`}>
+                                    {isShowingSearchResult ? 'Search Result' : 'Your Location'}
+                                </span>
+                            </div>
+
+                            {/* IP Address Header */}
+                            <div className="mb-6">
+                                <p className="text-slate-400 text-sm mb-1">IP Address</p>
+                                <p className="text-4xl font-mono font-bold text-white">{displayedLocation.ip}</p>
+                            </div>
+
+                            {/* Location Grid */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <LocationCard icon="🏙️" label="City" value={displayedLocation.city} />
+                                <LocationCard icon="📍" label="Region" value={displayedLocation.region} />
+                                <LocationCard icon="🌍" label="Country" value={displayedLocation.country} />
+                                <LocationCard icon="🧭" label="Coordinates" value={formatCoordinates(displayedLocation)} />
+                                <LocationCard icon="🕐" label="Timezone" value={displayedLocation.timezone} />
+                                <LocationCard icon="📮" label="Postal Code" value={displayedLocation.postal} />
+                                <LocationCard icon="🏢" label="Organization" value={displayedLocation.org} className="sm:col-span-2 lg:col-span-3" />
+                            </div>
                         </div>
 
-                        {/* IP Address Header */}
-                        <div className="mb-6">
-                            <p className="text-slate-400 text-sm mb-1">IP Address</p>
-                            <p className="text-4xl font-mono font-bold text-white">{displayedLocation.ip}</p>
-                        </div>
-
-                        {/* Location Grid */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <LocationCard icon="🏙️" label="City" value={displayedLocation.city} />
-                            <LocationCard icon="📍" label="Region" value={displayedLocation.region} />
-                            <LocationCard icon="🌍" label="Country" value={displayedLocation.country} />
-                            <LocationCard icon="🧭" label="Coordinates" value={formatCoordinates(displayedLocation)} />
-                            <LocationCard icon="🕐" label="Timezone" value={displayedLocation.timezone} />
-                            <LocationCard icon="📮" label="Postal Code" value={displayedLocation.postal} />
-                            <LocationCard icon="🏢" label="Organization" value={displayedLocation.org} className="sm:col-span-2 lg:col-span-3" />
-                        </div>
-                    </div>
+                        {/* Interactive Map */}
+                        <LocationMap
+                            latitude={displayedLocation.latitude}
+                            longitude={displayedLocation.longitude}
+                            city={displayedLocation.city}
+                            country={displayedLocation.country}
+                            ip={displayedLocation.ip}
+                        />
+                    </>
                 ) : (
                     <div className="bg-slate-800/80 border border-slate-700 rounded-2xl p-12 backdrop-blur-sm text-center">
                         <p className="text-slate-400">No location data available</p>
