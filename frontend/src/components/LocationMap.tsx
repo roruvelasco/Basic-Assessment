@@ -4,27 +4,21 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 /**
- * Custom purple marker icon using SVG
+ * Custom purple marker icon using Lucide MapPin
+ * Uses the MapPin icon path from lucide-react rendered as SVG for Leaflet
  */
 const createPurpleIcon = () => {
     return L.divIcon({
         className: 'custom-marker',
         html: `
-            <svg width="32" height="42" viewBox="0 0 32 42" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M16 0C7.163 0 0 7.163 0 16c0 12 16 26 16 26s16-14 16-26c0-8.837-7.163-16-16-16z" fill="#8B5CF6"/>
-                <path d="M16 0C7.163 0 0 7.163 0 16c0 12 16 26 16 26s16-14 16-26c0-8.837-7.163-16-16-16z" fill="url(#gradient)"/>
-                <circle cx="16" cy="16" r="6" fill="white"/>
-                <defs>
-                    <linearGradient id="gradient" x1="16" y1="0" x2="16" y2="42" gradientUnits="userSpaceOnUse">
-                        <stop stop-color="#A78BFA"/>
-                        <stop offset="1" stop-color="#7C3AED"/>
-                    </linearGradient>
-                </defs>
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="#8B5CF6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/>
+                <circle cx="12" cy="10" r="3" fill="white" stroke="#8B5CF6" stroke-width="1.5"/>
             </svg>
         `,
-        iconSize: [32, 42],
-        iconAnchor: [16, 42],
-        popupAnchor: [0, -42],
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32],
     });
 };
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, memo, useMemo } from 'react';
+import { Trash2, ListChecks, Check, ChevronRight } from 'lucide-react';
 import { historyService, type HistoryEntry } from '../services/historyService';
 import { showError, showSuccess } from './notifications/NotificationService';
 import { SortIcon } from './sorter';
@@ -28,7 +29,6 @@ const formatTimestamp = (timestamp: string): string => {
  * HistoryList Component
  * Displays search history with multi-select delete and click-to-re-search
  */
-
 const HistoryList: React.FC<HistoryListProps> = memo(({ refreshTrigger, onSelectHistory }) => {
     const [history, setHistory] = useState<HistoryEntry[]>([]);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -44,7 +44,6 @@ const HistoryList: React.FC<HistoryListProps> = memo(({ refreshTrigger, onSelect
         try {
             const data = await historyService.getHistory();
             setHistory(data);
-            // Clear selections when data refreshes
             setSelectedIds(new Set());
         } catch (err) {
             const message = err instanceof Error ? err.message : 'Failed to load history';
@@ -54,14 +53,12 @@ const HistoryList: React.FC<HistoryListProps> = memo(({ refreshTrigger, onSelect
         }
     }, []);
 
-    // Fetch on mount and when refreshTrigger changes
     useEffect(() => {
         fetchHistory();
     }, [fetchHistory, refreshTrigger]);
 
-    // Toggle checkbox selection
     const handleToggleSelect = (id: string, e: React.MouseEvent) => {
-        e.stopPropagation(); // Prevent triggering onSelectHistory
+        e.stopPropagation();
         setSelectedIds(prev => {
             const newSet = new Set(prev);
             if (newSet.has(id)) {
@@ -73,7 +70,6 @@ const HistoryList: React.FC<HistoryListProps> = memo(({ refreshTrigger, onSelect
         });
     };
 
-    // Select/deselect all
     const handleSelectAll = () => {
         if (selectedIds.size === history.length) {
             setSelectedIds(new Set());
@@ -82,7 +78,6 @@ const HistoryList: React.FC<HistoryListProps> = memo(({ refreshTrigger, onSelect
         }
     };
 
-    // Delete selected histories
     const handleDeleteSelected = async () => {
         if (selectedIds.size === 0) return;
 
@@ -91,8 +86,6 @@ const HistoryList: React.FC<HistoryListProps> = memo(({ refreshTrigger, onSelect
             const idsToDelete = Array.from(selectedIds);
             const result = await historyService.deleteHistories(idsToDelete);
             showSuccess('Deleted', `Removed ${result.deletedCount} history item(s)`);
-            
-            // Remove deleted items from local state
             setHistory(prev => prev.filter(h => !selectedIds.has(h._id)));
             setSelectedIds(new Set());
         } catch (err) {
@@ -103,17 +96,14 @@ const HistoryList: React.FC<HistoryListProps> = memo(({ refreshTrigger, onSelect
         }
     };
 
-    // Handle clicking a history item
     const handleItemClick = (entry: HistoryEntry) => {
         onSelectHistory(entry);
     };
 
-    // Toggle sort order
     const toggleSortOrder = () => {
         setSortOrder(prev => prev === 'newest' ? 'oldest' : 'newest');
     };
 
-    // Sorted history based on sortOrder
     const sortedHistory = useMemo(() => {
         return [...history].sort((a, b) => {
             const dateA = new Date(a.searchedAt).getTime();
@@ -166,6 +156,8 @@ const HistoryList: React.FC<HistoryListProps> = memo(({ refreshTrigger, onSelect
         );
     }
 
+    const allSelected = selectedIds.size === history.length;
+
     return (
         <div className="bg-slate-800/80 border border-slate-700 rounded-2xl p-4 sm:p-6 mt-6 backdrop-blur-sm">
             {/* Header */}
@@ -182,9 +174,7 @@ const HistoryList: React.FC<HistoryListProps> = memo(({ refreshTrigger, onSelect
                                 <div className="w-4 h-4 border-2 border-red-400/30 border-t-red-400 rounded-full animate-spin" />
                             ) : (
                                 <>
-                                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg>
+                                    <Trash2 className="w-4 h-4" />
                                     <span className="hidden sm:inline">{selectedIds.size}</span>
                                 </>
                             )}
@@ -192,14 +182,15 @@ const HistoryList: React.FC<HistoryListProps> = memo(({ refreshTrigger, onSelect
                     )}
                     <button
                         onClick={handleSelectAll}
-                        className="p-1.5 sm:px-2.5 sm:py-1.5 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-all text-sm"
-                        title={selectedIds.size === history.length ? 'Deselect All' : 'Select All'}
+                        className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg transition-all text-sm flex items-center gap-1.5 ${
+                            allSelected 
+                                ? 'text-indigo-400 bg-indigo-500/20 hover:bg-indigo-500/30' 
+                                : 'text-slate-400 hover:text-white hover:bg-slate-700'
+                        }`}
+                        title={allSelected ? 'Deselect All' : 'Select All'}
                     >
-                        <svg className="w-4 h-4 sm:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <rect x="3" y="3" width="18" height="18" rx="2" strokeLinecap="round" strokeLinejoin="round" />
-                            {selectedIds.size === history.length && <path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />}
-                        </svg>
-                        <span className="hidden sm:inline">{selectedIds.size === history.length ? 'Deselect' : 'Select'}</span>
+                        <ListChecks className="w-4 h-4" />
+                        <span className="hidden sm:inline">{allSelected ? 'Deselect' : 'Select'}</span>
                     </button>
                     <button
                         onClick={toggleSortOrder}
@@ -234,9 +225,7 @@ const HistoryList: React.FC<HistoryListProps> = memo(({ refreshTrigger, onSelect
                             }`}
                         >
                             {selectedIds.has(entry._id) && (
-                                <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                                    <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
+                                <Check className="w-3 h-3 text-white" strokeWidth={3} />
                             )}
                         </div>
 
@@ -254,15 +243,7 @@ const HistoryList: React.FC<HistoryListProps> = memo(({ refreshTrigger, onSelect
                         </div>
 
                         {/* Arrow indicator */}
-                        <svg 
-                            className="w-5 h-5 text-slate-600 group-hover:text-indigo-400 transition-colors flex-shrink-0" 
-                            viewBox="0 0 24 24" 
-                            fill="none" 
-                            stroke="currentColor" 
-                            strokeWidth="2"
-                        >
-                            <path d="M9 18l6-6-6-6" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
+                        <ChevronRight className="w-5 h-5 text-slate-600 group-hover:text-indigo-400 transition-colors flex-shrink-0" />
                     </div>
                 ))}
             </div>
