@@ -61,7 +61,8 @@ const login = async (req: Request, res: Response) => {
             maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
             path: '/'
         });
-
+        
+        // Return success response
         return res.status(200).json({
             success: true,
             message: 'Login successful',
