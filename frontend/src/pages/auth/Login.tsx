@@ -58,15 +58,15 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
                         <Layers className="w-10 h-10 text-white" />
                     </div>
                     <h1 className="text-3xl font-semibold text-white mb-2">Welcome Back</h1>
-                    <p className="text-slate-400">Sign in to your account</p>
+                    
                 </div>
 
                 {/* Login Card */}
                 <div className="bg-slate-800/80 border border-slate-700 rounded-2xl p-8 shadow-2xl backdrop-blur-sm">
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Email Field */}
-                        <div className="space-y-2">
-                            <label htmlFor="email" className="text-sm font-medium text-white">
+                        <div className="space-y-4">
+                            <label htmlFor="email" className="block text-sm font-medium text-white mb-3">
                                 Email
                             </label>
                             <input
@@ -82,8 +82,8 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
                         </div>
 
                         {/* Password Field */}
-                        <div className="space-y-2">
-                            <label htmlFor="password" className="text-sm font-medium text-white">
+                        <div className="space-y-4">
+                            <label htmlFor="password" className="block text-sm font-medium text-white mb-3">
                                 Password
                             </label>
                             <div className="relative">
@@ -127,10 +127,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
                     </form>
                 </div>
 
-                {/* Footer */}
-                <p className="text-center mt-8 text-sm text-slate-500">
-                    Basic Assessment App
-                </p>
+                
             </div>
         </div>
     );
