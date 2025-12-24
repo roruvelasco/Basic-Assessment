@@ -20,6 +20,9 @@
         "models/**/*",
         "interfaces/**/*",
         "config/**/*",
+        "routes/**/*",
+        "controllers/**/*",
+        "seeders/**/*",
         "server.ts"
     ],
     "exclude": [
