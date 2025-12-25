@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Search, X } from 'lucide-react';
+import { Search, X, Building2, MapPin, Globe, Compass, Clock, Mail, Building, LogOut } from 'lucide-react';
 import { geolocationService, isValidIPAddress } from '../../services/geolocationService';
 import { historyService, type HistoryEntry } from '../../services/historyService';
 import { authService } from '../../services/authService';
@@ -137,7 +137,7 @@ const Home: React.FC<HomeProps> = ({ onLogout }) => {
     };
 
     return (
-        <div className="min-h-screen bg-slate-900 p-6 relative overflow-hidden">
+        <div className="min-h-screen bg-slate-900 p-[clamp(1rem,4vw,1.5rem)] relative overflow-hidden">
             {/* background glow */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute w-96 h-96 bg-indigo-500 rounded-full blur-[100px] opacity-30 -top-48 -right-24" />
@@ -149,8 +149,8 @@ const Home: React.FC<HomeProps> = ({ onLogout }) => {
                 <div className="mb-8">
                     <div className="flex items-start justify-between">
                         <div>
-                            <h1 className="text-3xl font-semibold text-white">IP Geolocation</h1>
-                            <p className="text-slate-400 mt-1">Search and view IP location data</p>
+                            <h1 className="text-[clamp(1.5rem,6vw,1.875rem)] font-semibold text-white">IP Geolocation</h1>
+                            <p className="text-slate-400 mt-1 text-[clamp(0.75rem,3vw,1rem)]">Search and view IP location data</p>
                             {/* email shows below subtitle on mobile */}
                             {userEmail && (
                                 <p className="text-slate-500 text-sm mt-1 sm:hidden">{userEmail}</p>
@@ -164,17 +164,18 @@ const Home: React.FC<HomeProps> = ({ onLogout }) => {
                             <span className="text-slate-600 hidden sm:block">|</span>
                             <button
                                 onClick={handleLogout}
-                                className="px-4 py-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-all"
+                                className="px-3 py-1.5 bg-slate-800 border border-slate-700 hover:border-red-500/50 hover:bg-red-500/10 text-slate-400 hover:text-red-400 rounded-lg transition-all flex items-center gap-2 text-sm"
                             >
-                                Logout
+                                <LogOut className="w-4 h-4" />
+                                <span className="hidden sm:inline">Logout</span>
                             </button>
                         </div>
                     </div>
                 </div>
 
                 {/* search bar */}
-                <div className="bg-slate-800/80 border border-slate-700 rounded-2xl p-6 mb-6 backdrop-blur-sm">
-                    <div className="flex items-center gap-2 sm:gap-4">
+                <div className="bg-slate-800/80 border border-slate-700 rounded-2xl p-[clamp(1rem,4vw,1.5rem)] mb-6 backdrop-blur-sm">
+                    <div className="flex items-center gap-[clamp(0.5rem,2vw,1rem)]">
                         {/* clear button - left side, icon only on mobile */}
                         {isShowingSearchResult && (
                             <button
@@ -191,7 +192,7 @@ const Home: React.FC<HomeProps> = ({ onLogout }) => {
                         <div className="flex-1">
                             <input
                                 type="text"
-                                placeholder="Enter IP address (e.g., 8.8.8.8)"
+                                placeholder="e.g., 8.8.8.8"
                                 value={searchIP}
                                 onChange={(e) => setSearchIP(e.target.value)}
                                 onKeyPress={handleKeyPress}
@@ -229,21 +230,23 @@ const Home: React.FC<HomeProps> = ({ onLogout }) => {
                     </div>
                 ) : displayedLocation ? (
                     <>
-                        <div className="bg-slate-800/80 border border-slate-700 rounded-2xl p-6 mb-6 backdrop-blur-sm">
+                        <div className="bg-slate-800/80 border border-slate-700 rounded-2xl p-[clamp(1rem,4vw,1.5rem)] mb-6 backdrop-blur-sm">
 
                             <div className="mb-6">
                                 <p className="text-slate-400 text-sm mb-1">IP Address</p>
-                                <p className="text-4xl font-mono font-bold text-white">{displayedLocation.ip}</p>
+                                <p className="text-[clamp(1.25rem,5vw,2.25rem)] font-mono font-bold text-white break-all">{displayedLocation.ip}</p>
                             </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                <LocationCard icon="🏙️" label="City" value={displayedLocation.city} />
-                                <LocationCard icon="📍" label="Region" value={displayedLocation.region} />
-                                <LocationCard icon="🌍" label="Country" value={displayedLocation.country} />
-                                <LocationCard icon="🧭" label="Coordinates" value={formatCoordinates(displayedLocation)} />
-                                <LocationCard icon="🕐" label="Timezone" value={displayedLocation.timezone} />
-                                <LocationCard icon="📮" label="Postal Code" value={displayedLocation.postal} />
-                                <LocationCard icon="🏢" label="Organization" value={displayedLocation.org} className="sm:col-span-2 lg:col-span-3" wrap />
+                            <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,200px),1fr))] gap-[clamp(0.75rem,2vw,1rem)]">
+                                <LocationCard icon={<Building2 className="w-5 h-5" />} label="City" value={displayedLocation.city} />
+                                <LocationCard icon={<MapPin className="w-5 h-5" />} label="Region" value={displayedLocation.region} />
+                                <LocationCard icon={<Globe className="w-5 h-5" />} label="Country" value={displayedLocation.country} />
+                                <LocationCard icon={<Compass className="w-5 h-5" />} label="Coordinates" value={formatCoordinates(displayedLocation)} />
+                                <LocationCard icon={<Clock className="w-5 h-5" />} label="Timezone" value={displayedLocation.timezone} />
+                                <LocationCard icon={<Mail className="w-5 h-5" />} label="Postal Code" value={displayedLocation.postal} />
+                            </div>
+                            <div className="mt-[clamp(0.75rem,2vw,1rem)]">
+                                <LocationCard icon={<Building className="w-5 h-5" />} label="Organization" value={displayedLocation.org} wrap />
                             </div>
                         </div>
 

@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { type ReactNode } from 'react';
 
 interface LocationCardProps {
-    icon: string;
+    icon: ReactNode;
     label: string;
     value: string;
     className?: string;
-    wrap?: boolean; // allow text to wrap instead of truncate
+    wrap?: boolean;
 }
 
 // simple card to display one piece of location info
@@ -22,7 +22,7 @@ const LocationCard: React.FC<LocationCardProps> = ({ icon, label, value, classNa
         `}
     >
         <div className="flex items-center gap-2 mb-1">
-            <span className="text-lg transition-transform duration-300 group-hover:scale-110">{icon}</span>
+            <span className="text-indigo-400">{icon}</span>
             <span className="text-slate-400 text-sm">{label}</span>
         </div>
         <p 

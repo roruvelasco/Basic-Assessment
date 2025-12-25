@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, memo, useMemo } from 'react';
-import { Trash2, ListChecks, Check, ChevronRight, Globe } from 'lucide-react';
+import { Trash2, CheckSquare, Square, Check, ChevronRight, Globe } from 'lucide-react';
 import { historyService, type HistoryEntry } from '../services/historyService';
 import { showError, showSuccess } from './notifications/NotificationService';
 import { SortIcon } from './sorter';
@@ -176,8 +176,8 @@ const HistoryList: React.FC<HistoryListProps> = memo(({ refreshTrigger, onSelect
                         }`}
                         title={allSelected ? 'Deselect All' : 'Select All'}
                     >
-                        <ListChecks className="w-4 h-4" />
-                        <span className="hidden sm:inline">{allSelected ? 'Deselect' : 'Select'}</span>
+                        {allSelected ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
+                        <span className="hidden sm:inline">{allSelected ? 'Deselect All' : 'Select All'}</span>
                     </button>
                     <button
                         onClick={toggleSortOrder}
@@ -219,7 +219,7 @@ const HistoryList: React.FC<HistoryListProps> = memo(({ refreshTrigger, onSelect
                         {/* ip info */}
                         <div className="flex-1 min-w-0">
                             <p className="text-white font-mono font-medium truncate">{entry.ip}</p>
-                            <p className="text-slate-400 text-sm truncate">
+                            <p className="text-slate-400 text-sm truncate hidden sm:block">
                                 {entry.city}, {entry.country}
                             </p>
                         </div>

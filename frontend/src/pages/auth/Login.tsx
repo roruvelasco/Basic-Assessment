@@ -38,7 +38,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
     const isFormValid = email.trim() !== '' && password.trim() !== '';
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden bg-slate-900">
+        <div className="min-h-screen flex items-center justify-center p-[clamp(1rem,4vw,1.5rem)] relative overflow-hidden bg-slate-900">
             {/* background glow */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute w-96 h-96 bg-indigo-500 rounded-full blur-[100px] opacity-40 -top-48 -right-24 animate-pulse" />
@@ -51,12 +51,12 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
                     <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full mb-6 shadow-lg shadow-indigo-500/30">
                         <Layers className="w-10 h-10 text-white" />
                     </div>
-                    <h1 className="text-3xl font-semibold text-white mb-2">Welcome Back</h1>
+                    <h1 className="text-[clamp(1.5rem,6vw,1.875rem)] font-semibold text-white mb-2">Welcome Back</h1>
                     
                 </div>
 
                 {/* login form card */}
-                <div className="bg-slate-800/80 border border-slate-700 rounded-2xl p-8 shadow-2xl backdrop-blur-sm">
+                <div className="bg-slate-800/80 border border-slate-700 rounded-2xl p-[clamp(1.5rem,5vw,2rem)] shadow-2xl backdrop-blur-sm">
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* email */}
                         <div className="space-y-4">
