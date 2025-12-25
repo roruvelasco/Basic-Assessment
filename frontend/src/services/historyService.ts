@@ -1,8 +1,6 @@
 import api from './api';
 
-/**
- * Geolocation data structure (matches IPinfo API response)
- */
+// matches ipinfo api response
 export interface GeoData {
     ip: string;
     city?: string;
@@ -14,9 +12,7 @@ export interface GeoData {
     timezone?: string;
 }
 
-/**
- * History entry from database
- */
+// what we get back from our db
 export interface HistoryEntry {
     _id: string;
     userId: string;
@@ -32,39 +28,26 @@ export interface HistoryEntry {
     searchedAt: string;
 }
 
-/**
- * History Service
- * Handles all IP search history API calls
- */
 export const historyService = {
-    /**
-     * Get all search history for current user
-     */
+    // fetch all history for current user
     getHistory: async (): Promise<HistoryEntry[]> => {
         const response = await api.get<{ success: boolean; data: HistoryEntry[] }>('/api/history');
         return response.data.data;
     },
 
-    /**
-     * Get a single history entry by ID
-     */
+    // get single entry
     getHistoryById: async (id: string): Promise<HistoryEntry> => {
         const response = await api.get<{ success: boolean; data: HistoryEntry }>(`/api/history/${id}`);
         return response.data.data;
     },
 
-    /**
-     * Add a new search to history
-     * Accepts raw IPinfo API response format
-     */
+    // save new search
     addHistory: async (geoData: GeoData): Promise<HistoryEntry> => {
         const response = await api.post<{ success: boolean; data: HistoryEntry }>('/api/history', geoData);
         return response.data.data;
     },
 
-    /**
-     * Delete multiple history entries by IDs
-     */
+    // bulk delete
     deleteHistories: async (ids: string[]): Promise<{ deletedCount: number }> => {
         const response = await api.delete<{ success: boolean; deletedCount: number }>('/api/history', {
             data: { ids }
@@ -72,9 +55,7 @@ export const historyService = {
         return { deletedCount: response.data.deletedCount };
     },
 
-    /**
-     * Clear all history for current user
-     */
+    // wipe everything
     clearAllHistory: async (): Promise<{ deletedCount: number }> => {
         const response = await api.delete<{ success: boolean; deletedCount: number }>('/api/history/all');
         return { deletedCount: response.data.deletedCount };

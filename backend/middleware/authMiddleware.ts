@@ -1,11 +1,12 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { AuthRequest } from '../interfaces/IAuthRequest';
 
 /**
  * Authentication Middleware
  * Verifies JWT token from cookie or Authorization header
  */
-const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
         // Get token from cookie or Authorization header
         const token = req.cookies?.token || req.headers.authorization?.replace('Bearer ', '');
@@ -24,8 +25,8 @@ const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
         };
 
         // Attach user info to request
-        (req as any).userId = decoded.userId;
-        (req as any).email = decoded.email;
+        req.userId = decoded.userId;
+        req.email = decoded.email;
 
         next();
     } catch (error) {
@@ -38,3 +39,4 @@ const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
 };
 
 export default authMiddleware;
+

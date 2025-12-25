@@ -1,21 +1,15 @@
 import React from 'react';
 
-/**
- * Location Card Props
- */
 interface LocationCardProps {
     icon: string;
     label: string;
     value: string;
     className?: string;
+    wrap?: boolean; // allow text to wrap instead of truncate
 }
 
-/**
- * Location Card Component
- * Displays a single location data field with icon and label
- * Features smooth hover effects with scale and glow
- */
-const LocationCard: React.FC<LocationCardProps> = ({ icon, label, value, className = '' }) => (
+// simple card to display one piece of location info
+const LocationCard: React.FC<LocationCardProps> = ({ icon, label, value, className = '', wrap = false }) => (
     <div 
         className={`
             bg-slate-900/50 border border-slate-700/50 rounded-xl p-4
@@ -31,7 +25,12 @@ const LocationCard: React.FC<LocationCardProps> = ({ icon, label, value, classNa
             <span className="text-lg transition-transform duration-300 group-hover:scale-110">{icon}</span>
             <span className="text-slate-400 text-sm">{label}</span>
         </div>
-        <p className="text-white font-medium truncate" title={value}>{value}</p>
+        <p 
+            className={`text-white font-medium ${wrap ? 'break-words' : 'truncate'}`} 
+            title={!wrap ? value : undefined}
+        >
+            {value}
+        </p>
     </div>
 );
 

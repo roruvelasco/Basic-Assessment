@@ -1,13 +1,9 @@
-/**
- * Notifications Module Exports
- */
+// notification module exports
 export {
-    showNotification,
+    NotificationProvider,
+    useNotification,
     showSuccess,
     showError,
-    showWarning,
     showInfo,
-    removeNotification,
+    setNotificationFunctions,
 } from './NotificationService';
-
-export type { NotificationType } from './NotificationService';

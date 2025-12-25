@@ -1,13 +1,6 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import HistoryModel from '../models/HistorySchema';
-
-/**
- * Extended Request interface with user info from auth middleware
- */
-interface AuthRequest extends Request {
-    userId?: string;
-    email?: string;
-}
+import { AuthRequest } from '../interfaces/IAuthRequest';
 
 /**
  * Parse "loc" field into separate latitude and longitude

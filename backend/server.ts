@@ -6,6 +6,7 @@ import connectDB from './config/connect-db';
 import healthCheckRoute from './routes/healthCheckRoute';
 import loginRoute from './routes/authRoute';
 import historyRoute from './routes/historyRoute';
+import geolocationRoute from './routes/geolocationRoute';
 import authMiddleware from './middleware/authMiddleware';
 
 dotenv.config();
@@ -44,6 +45,7 @@ app.use(cookieParser());
 // Public Routes
 app.use('/api/health-check', healthCheckRoute);
 app.use('/api/login', loginRoute);
+app.use('/api/geolocation', geolocationRoute);
 
 // Protected Routes (require authentication)
 app.use('/api/history', authMiddleware, historyRoute);

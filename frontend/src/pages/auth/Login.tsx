@@ -3,16 +3,10 @@ import { Layers, Eye, EyeOff } from 'lucide-react';
 import { authService } from '../../services/authService';
 import { showError, showSuccess } from '../../components/notifications/NotificationService';
 
-/**
- * Login Props
- */
 interface LoginProps {
     onLoginSuccess: () => void;
 }
 
-/**
- * Login Page Component
- */
 const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -27,7 +21,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
             await authService.login({ email, password });
             showSuccess('Welcome!', 'Login successful');
             
-            // Notify parent that login was successful
+            // small delay so user sees the success toast
             setTimeout(() => {
                 onLoginSuccess();
             }, 500);
@@ -45,14 +39,14 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
 
     return (
         <div className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden bg-slate-900">
-            {/* Background Glow Effects */}
+            {/* background glow */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute w-96 h-96 bg-indigo-500 rounded-full blur-[100px] opacity-40 -top-48 -right-24 animate-pulse" />
                 <div className="absolute w-72 h-72 bg-purple-500 rounded-full blur-[100px] opacity-40 -bottom-36 -left-24 animate-pulse" />
             </div>
 
             <div className="w-full max-w-md relative z-10">
-                {/* Header Section */}
+                {/* logo + title */}
                 <div className="text-center mb-8">
                     <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full mb-6 shadow-lg shadow-indigo-500/30">
                         <Layers className="w-10 h-10 text-white" />
@@ -61,10 +55,10 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
                     
                 </div>
 
-                {/* Login Card */}
+                {/* login form card */}
                 <div className="bg-slate-800/80 border border-slate-700 rounded-2xl p-8 shadow-2xl backdrop-blur-sm">
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Email Field */}
+                        {/* email */}
                         <div className="space-y-4">
                             <label htmlFor="email" className="block text-sm font-medium text-white mb-3">
                                 Email
@@ -81,7 +75,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
                             />
                         </div>
 
-                        {/* Password Field */}
+                        {/* password */}
                         <div className="space-y-4">
                             <label htmlFor="password" className="block text-sm font-medium text-white mb-3">
                                 Password
@@ -112,7 +106,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
                             </div>
                         </div>
 
-                        {/* Submit Button */}
+                        {/* submit */}
                         <button
                             type="submit"
                             disabled={!isFormValid || isLoading}

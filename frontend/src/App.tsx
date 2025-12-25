@@ -1,27 +1,22 @@
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
-import { ReactNotifications } from 'react-notifications-component';
 import { useState, useEffect, useCallback } from 'react';
-import 'react-notifications-component/dist/theme.css';
-import 'animate.css/animate.min.css';
 
 import Login from './pages/auth/Login';
 import Home from './pages/homeScreen/Home';
+import LoadingScreen from './components/LoadingScreen';
 import { authService } from './services/authService';
+import { NotificationProvider, useNotification, setNotificationFunctions } from './components/notifications/NotificationService';
 
-/**
- * Loading Spinner Component
- */
-const LoadingScreen: React.FC = () => (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
-    </div>
-);
+// bridge to set notification functions for non-component usage
+const NotificationBridge = () => {
+    const notifications = useNotification();
+    useEffect(() => {
+        setNotificationFunctions(notifications);
+    }, [notifications]);
+    return null;
+};
 
-/**
- * Main App Component
- * Uses createBrowserRouter for modern React Router v6.4+ data APIs
- */
-function App() {
+function AppContent() {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -52,17 +47,10 @@ function App() {
         checkAuthentication();
     }, []);
 
-    // Show loading while checking auth
     if (isLoading) {
-        return (
-            <>
-                <ReactNotifications />
-                <LoadingScreen />
-            </>
-        );
+        return <LoadingScreen />;
     }
 
-    // Create router with object-based route definitions
     const router = createBrowserRouter([
         {
             path: '/',
@@ -84,9 +72,17 @@ function App() {
 
     return (
         <div className="app-container">
-            <ReactNotifications />
             <RouterProvider router={router} />
         </div>
+    );
+}
+
+function App() {
+    return (
+        <NotificationProvider>
+            <NotificationBridge />
+            <AppContent />
+        </NotificationProvider>
     );
 }
 

@@ -1,20 +1,15 @@
 import React, { useState, useEffect, useCallback, memo, useMemo } from 'react';
-import { Trash2, ListChecks, Check, ChevronRight } from 'lucide-react';
+import { Trash2, ListChecks, Check, ChevronRight, Globe } from 'lucide-react';
 import { historyService, type HistoryEntry } from '../services/historyService';
 import { showError, showSuccess } from './notifications/NotificationService';
 import { SortIcon } from './sorter';
 
-/**
- * HistoryList Props
- */
 interface HistoryListProps {
     refreshTrigger: number;
     onSelectHistory: (entry: HistoryEntry) => void;
 }
 
-/**
- * Format timestamp to readable date/time
- */
+// format timestamp nicely
 const formatTimestamp = (timestamp: string): string => {
     const date = new Date(timestamp);
     return date.toLocaleString('en-US', {
@@ -25,10 +20,6 @@ const formatTimestamp = (timestamp: string): string => {
     });
 };
 
-/**
- * HistoryList Component
- * Displays search history with multi-select delete and click-to-re-search
- */
 const HistoryList: React.FC<HistoryListProps> = memo(({ refreshTrigger, onSelectHistory }) => {
     const [history, setHistory] = useState<HistoryEntry[]>([]);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -37,7 +28,6 @@ const HistoryList: React.FC<HistoryListProps> = memo(({ refreshTrigger, onSelect
     const [error, setError] = useState<string | null>(null);
     const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
 
-    // Fetch history from API
     const fetchHistory = useCallback(async () => {
         setIsLoading(true);
         setError(null);
@@ -112,7 +102,6 @@ const HistoryList: React.FC<HistoryListProps> = memo(({ refreshTrigger, onSelect
         });
     }, [history, sortOrder]);
 
-    // Loading state
     if (isLoading) {
         return (
             <div className="bg-slate-800/80 border border-slate-700 rounded-2xl p-6 mt-6 backdrop-blur-sm">
@@ -124,7 +113,6 @@ const HistoryList: React.FC<HistoryListProps> = memo(({ refreshTrigger, onSelect
         );
     }
 
-    // Error state
     if (error) {
         return (
             <div className="bg-slate-800/80 border border-slate-700 rounded-2xl p-6 mt-6 backdrop-blur-sm">
@@ -142,13 +130,12 @@ const HistoryList: React.FC<HistoryListProps> = memo(({ refreshTrigger, onSelect
         );
     }
 
-    // Empty state
     if (history.length === 0) {
         return (
             <div className="bg-slate-800/80 border border-slate-700 rounded-2xl p-6 mt-6 backdrop-blur-sm">
                 <h2 className="text-xl font-semibold text-white mb-4">Search History</h2>
                 <div className="text-center py-8">
-                    <span className="text-4xl mb-3 block">📭</span>
+                    <Globe className="w-12 h-12 text-slate-500 mx-auto mb-3" />
                     <p className="text-slate-400">No search history yet</p>
                     <p className="text-slate-500 text-sm mt-1">Your IP searches will appear here</p>
                 </div>
@@ -160,7 +147,7 @@ const HistoryList: React.FC<HistoryListProps> = memo(({ refreshTrigger, onSelect
 
     return (
         <div className="bg-slate-800/80 border border-slate-700 rounded-2xl p-4 sm:p-6 mt-6 backdrop-blur-sm">
-            {/* Header */}
+            {/* header with actions */}
             <div className="flex items-center justify-between gap-2 mb-4">
                 <h2 className="text-lg sm:text-xl font-semibold text-white shrink-0">History</h2>
                 <div className="flex items-center gap-1.5 sm:gap-2">
@@ -203,7 +190,7 @@ const HistoryList: React.FC<HistoryListProps> = memo(({ refreshTrigger, onSelect
                 </div>
             </div>
 
-            {/* History List */}
+            {/* list of history items */}
             <div className="space-y-2 max-h-80 overflow-y-auto pr-1 custom-scrollbar">
                 {sortedHistory.map((entry) => (
                     <div
@@ -215,7 +202,7 @@ const HistoryList: React.FC<HistoryListProps> = memo(({ refreshTrigger, onSelect
                                 : 'bg-slate-900/50 border border-slate-700/50 hover:border-indigo-500/30 hover:bg-slate-900/80'
                         }`}
                     >
-                        {/* Checkbox */}
+                        {/* checkbox */}
                         <div
                             onClick={(e) => handleToggleSelect(entry._id, e)}
                             className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-all ${
@@ -229,7 +216,7 @@ const HistoryList: React.FC<HistoryListProps> = memo(({ refreshTrigger, onSelect
                             )}
                         </div>
 
-                        {/* IP Address */}
+                        {/* ip info */}
                         <div className="flex-1 min-w-0">
                             <p className="text-white font-mono font-medium truncate">{entry.ip}</p>
                             <p className="text-slate-400 text-sm truncate">
@@ -237,12 +224,11 @@ const HistoryList: React.FC<HistoryListProps> = memo(({ refreshTrigger, onSelect
                             </p>
                         </div>
 
-                        {/* Timestamp */}
+                        {/* when searched */}
                         <div className="text-slate-500 text-sm flex-shrink-0">
                             {formatTimestamp(entry.searchedAt)}
                         </div>
 
-                        {/* Arrow indicator */}
                         <ChevronRight className="w-5 h-5 text-slate-600 group-hover:text-indigo-400 transition-colors flex-shrink-0" />
                     </div>
                 ))}

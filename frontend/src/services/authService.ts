@@ -1,33 +1,21 @@
 import api from './api';
 
-/**
- * Login Credentials Interface
- */
 export interface LoginCredentials {
     email: string;
     password: string;
 }
 
-/**
- * User Interface
- */
 export interface IUser {
     id: string;
     email: string;
 }
 
-/**
- * Login Response Interface
- */
 export interface LoginResponse {
     success: boolean;
     message: string;
     user: IUser;
 }
 
-/**
- * Auth Check Response Interface
- */
 export interface AuthCheckResponse {
     success: boolean;
     authenticated: boolean;
@@ -35,27 +23,18 @@ export interface AuthCheckResponse {
     message?: string;
 }
 
-/**
- * Auth Service
- * Cookie-based authentication (no localStorage for tokens)
- */
 export const authService = {
-    /**
-     * Login user with email and password
-     * Cookie is set automatically by the server
-     */
+    // login - cookie gets set by server automatically
     login: async (credentials: LoginCredentials): Promise<LoginResponse> => {
         const response = await api.post<LoginResponse>('/api/login', credentials);
-        // Store user info only (not token - that's in the httpOnly cookie)
+        // store user info locally (token lives in httpOnly cookie)
         if (response.data.user) {
             sessionStorage.setItem('user', JSON.stringify(response.data.user));
         }
         return response.data;
     },
 
-    /**
-     * Logout user - clears cookie on server and local session
-     */
+    // logout - clear cookie + session
     logout: async (): Promise<void> => {
         try {
             await api.post('/api/login/logout');
@@ -64,9 +43,7 @@ export const authService = {
         }
     },
 
-    /**
-     * Check if user is authenticated (validates cookie with server)
-     */
+    // check if we're still logged in (validates cookie server-side)
     checkAuth: async (): Promise<AuthCheckResponse> => {
         try {
             const response = await api.get<AuthCheckResponse>('/api/login/check');
@@ -76,9 +53,7 @@ export const authService = {
         }
     },
 
-    /**
-     * Get current user from session storage
-     */
+    // get stored user from session
     getCurrentUser: (): IUser | null => {
         const userStr = sessionStorage.getItem('user');
         if (userStr) {
@@ -91,10 +66,7 @@ export const authService = {
         return null;
     },
 
-    /**
-     * Quick check if user might be authenticated (for initial render)
-     * Use checkAuth() for definitive server-side validation
-     */
+    // quick local check if user might be logged in
     hasSession: (): boolean => {
         return !!sessionStorage.getItem('user');
     },

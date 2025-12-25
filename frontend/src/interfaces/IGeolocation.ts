@@ -1,10 +1,4 @@
-/**
- * Geolocation Interfaces
- */
-
-/**
- * Raw API response from ipinfo.io
- */
+// raw response from ipinfo api
 export interface IGeolocationRaw {
     ip: string;
     city?: string;
@@ -16,9 +10,7 @@ export interface IGeolocationRaw {
     timezone?: string;
 }
 
-/**
- * Parsed geolocation with separated coordinates
- */
+// parsed version with lat/lng split out
 export interface IGeolocation {
     ip: string;
     city: string;
@@ -31,9 +23,6 @@ export interface IGeolocation {
     timezone: string;
 }
 
-/**
- * Search history entry
- */
 export interface ISearchHistory {
     _id: string;
     ipAddress: string;

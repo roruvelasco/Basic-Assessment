@@ -6,10 +6,7 @@ interface SortIconProps {
     className?: string;
 }
 
-/**
- * Sort Icon Component
- * Uses lucide-react icons for ascending/descending sort indication
- */
+// shows up/down arrow based on sort direction
 const SortIcon: React.FC<SortIconProps> = ({ ascending, className = 'w-4 h-4' }) => (
     ascending 
         ? <ArrowUpAZ className={className} /> 
