@@ -9,24 +9,21 @@ import {
 
 const router = Router();
 
-/**
- * History Routes
- * All routes are protected by auth middleware (applied in server.ts)
- */
+// History routes (protected)
 
-// GET /api/history - Get all history for logged-in user
+// Get all history
 router.get('/', getHistory);
 
-// GET /api/history/:id - Get single history record
+// Get single record
 router.get('/:id', getHistoryById);
 
-// POST /api/history - Add new history entry
+// Add entry
 router.post('/', addHistory);
 
-// DELETE /api/history - Delete multiple history records
+// Delete multiple
 router.delete('/', deleteHistories);
 
-// DELETE /api/history/all - Clear all history
+// Clear all
 router.delete('/all', clearAllHistory);
 
 export default router;

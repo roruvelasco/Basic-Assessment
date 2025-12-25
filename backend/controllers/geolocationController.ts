@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import axios from 'axios';
 
-// check if IP is localhost/loopback
+// Check for localhost IP
 const isLocalhostIP = (ip: string): boolean => {
     return ip === '::1' ||
         ip === '127.0.0.1' ||
@@ -9,7 +9,7 @@ const isLocalhostIP = (ip: string): boolean => {
         ip.startsWith('::ffff:127.');
 };
 
-// get current user's location
+// Get client location
 const getCurrentLocation = async (req: Request, res: Response) => {
     try {
         const forwardedFor = req.headers['x-forwarded-for'];
@@ -19,7 +19,7 @@ const getCurrentLocation = async (req: Request, res: Response) => {
 
         let response;
 
-        // on localhost, let ipinfo auto-detect our public IP
+        // Auto-detect public IP on localhost
         if (!clientIP || isLocalhostIP(clientIP)) {
             response = await axios.get('https://ipinfo.io/geo');
         } else {
@@ -40,9 +40,7 @@ const getCurrentLocation = async (req: Request, res: Response) => {
     }
 };
 
-/**
- * Get geolocation for a specific IP address
- */
+// Get location by IP
 const getLocationByIP = async (req: Request, res: Response) => {
     try {
         const { ip } = req.params;
@@ -54,7 +52,7 @@ const getLocationByIP = async (req: Request, res: Response) => {
             });
         }
 
-        // Call ipinfo.io with the specified IP
+        // Fetch geo data from ipinfo.io
         const response = await axios.get(`https://ipinfo.io/${ip}/geo`);
 
         return res.status(200).json({

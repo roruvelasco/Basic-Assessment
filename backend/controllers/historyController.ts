@@ -2,10 +2,7 @@ import { Response } from 'express';
 import HistoryModel from '../models/HistorySchema';
 import { AuthRequest } from '../interfaces/IAuthRequest';
 
-/**
- * Parse "loc" field into separate latitude and longitude
- * Format: "37.4056,-122.0775"
- */
+// Split loc string into lat/lng
 const parseLocation = (loc?: string): { latitude: number | null; longitude: number | null } => {
     if (!loc) return { latitude: null, longitude: null };
 
@@ -16,10 +13,7 @@ const parseLocation = (loc?: string): { latitude: number | null; longitude: numb
     };
 };
 
-/**
- * POST /api/history
- * Add a new IP search to history
- */
+// Add history entry
 const addHistory = async (req: AuthRequest, res: Response) => {
     try {
         const userId = req.userId;
@@ -33,7 +27,7 @@ const addHistory = async (req: AuthRequest, res: Response) => {
 
         const { ip, city, region, country, loc, org, postal, timezone } = req.body;
 
-        // Validate IP address
+        // Check required fields
         if (!ip) {
             return res.status(400).json({
                 success: false,
@@ -41,10 +35,10 @@ const addHistory = async (req: AuthRequest, res: Response) => {
             });
         }
 
-        // Parse location string
+        // Parse coords
         const { latitude, longitude } = parseLocation(loc);
 
-        // Create new history entry
+        // Create record
         const historyEntry = new HistoryModel({
             userId,
             ip,
@@ -77,10 +71,7 @@ const addHistory = async (req: AuthRequest, res: Response) => {
     }
 };
 
-/**
- * GET /api/history
- * Get all search history for the logged-in user
- */
+// Get user history
 const getHistory = async (req: AuthRequest, res: Response) => {
     try {
         const userId = req.userId;
@@ -92,7 +83,7 @@ const getHistory = async (req: AuthRequest, res: Response) => {
             });
         }
 
-        // Fetch history sorted by newest first, limit to 50
+        // Get latest 50 entries
         const history = await HistoryModel.find({ userId })
             .sort({ searchedAt: -1 })
             .limit(50)
@@ -112,10 +103,7 @@ const getHistory = async (req: AuthRequest, res: Response) => {
     }
 };
 
-/**
- * GET /api/history/:id
- * Get a single history record by ID
- */
+// Get single history record
 const getHistoryById = async (req: AuthRequest, res: Response) => {
     try {
         const userId = req.userId;
@@ -137,7 +125,7 @@ const getHistoryById = async (req: AuthRequest, res: Response) => {
             });
         }
 
-        // Security check: verify record belongs to user
+        // Ensure ownership
         if (historyEntry.userId.toString() !== userId) {
             return res.status(403).json({
                 success: false,
@@ -159,10 +147,7 @@ const getHistoryById = async (req: AuthRequest, res: Response) => {
     }
 };
 
-/**
- * DELETE /api/history
- * Delete multiple history records
- */
+// Bulk delete history
 const deleteHistories = async (req: AuthRequest, res: Response) => {
     try {
         const userId = req.userId;
@@ -175,7 +160,7 @@ const deleteHistories = async (req: AuthRequest, res: Response) => {
             });
         }
 
-        // Validate IDs array
+        // Check for IDs
         if (!ids || !Array.isArray(ids) || ids.length === 0) {
             return res.status(400).json({
                 success: false,
@@ -183,7 +168,7 @@ const deleteHistories = async (req: AuthRequest, res: Response) => {
             });
         }
 
-        // Delete only records belonging to this user
+        // Execute delete
         const result = await HistoryModel.deleteMany({
             _id: { $in: ids },
             userId: userId
@@ -204,10 +189,7 @@ const deleteHistories = async (req: AuthRequest, res: Response) => {
     }
 };
 
-/**
- * DELETE /api/history/all
- * Clear all history for the logged-in user
- */
+// Clear all history
 const clearAllHistory = async (req: AuthRequest, res: Response) => {
     try {
         const userId = req.userId;

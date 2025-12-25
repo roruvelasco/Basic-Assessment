@@ -3,15 +3,12 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import UserModel from '../models/UserSchema';
 
-/**
- * Login Controller
- * Validates user credentials and returns a JWT token
- */
+// Login user & issue JWT
 const login = async (req: Request, res: Response) => {
     try {
         const { email, password } = req.body;
 
-        // Validate required fields
+        // Basic validation
         if (!email || !password) {
             return res.status(400).json({
                 success: false,
@@ -28,7 +25,7 @@ const login = async (req: Request, res: Response) => {
             });
         }
 
-        // Find user by email
+        // Check if user exists
         const user = await UserModel.findOne({ email }).select('+password');
         if (!user) {
             return res.status(404).json({
@@ -37,7 +34,7 @@ const login = async (req: Request, res: Response) => {
             });
         }
 
-        // Compare passwords
+        // Verify password
         const isPasswordValid = await bcrypt.compare(password, user.password as string);
         if (!isPasswordValid) {
             return res.status(401).json({
@@ -46,14 +43,14 @@ const login = async (req: Request, res: Response) => {
             });
         }
 
-        // Generate JWT token
+        // Create JWT token
         const token = jwt.sign(
             { userId: user._id, email: user.email },
             process.env.JWT_SECRET as string,
             { expiresIn: '7d' }
         );
 
-        // Set HTTP-only cookie (not accessible by JavaScript)
+        // Set auth cookie
         res.cookie('token', token, {
             httpOnly: true,
             secure: true,
@@ -81,9 +78,7 @@ const login = async (req: Request, res: Response) => {
     }
 };
 
-/**
- * Check if user is authenticated (validates cookie)
- */
+// Verify auth status
 const checkAuth = async (req: Request, res: Response) => {
     try {
         const token = req.cookies?.token;
@@ -131,9 +126,7 @@ const checkAuth = async (req: Request, res: Response) => {
     }
 };
 
-/**
- * Logout - clears the auth cookie
- */
+// Clear auth cookie
 const logout = async (req: Request, res: Response) => {
     res.clearCookie('token', {
         httpOnly: true,

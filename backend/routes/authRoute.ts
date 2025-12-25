@@ -3,13 +3,13 @@ import { login, checkAuth, logout } from '../controllers/authController';
 
 const router = express.Router();
 
-// POST /api/login - Login and set cookie
+// Login route
 router.post('/', login);
 
-// GET /api/login/check - Check if authenticated (validates cookie)
+// Auth check
 router.get('/check', checkAuth);
 
-// POST /api/login/logout - Logout and clear cookie
+// Logout
 router.post('/logout', logout);
 
 export default router;

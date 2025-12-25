@@ -3,10 +3,10 @@ import { getCurrentLocation, getLocationByIP } from '../controllers/geolocationC
 
 const router = express.Router();
 
-// GET /api/geolocation - Get current user's geolocation (uses real client IP)
+// Current location
 router.get('/', getCurrentLocation);
 
-// GET /api/geolocation/:ip - Get geolocation for specific IP
+// Location by IP
 router.get('/:ip', getLocationByIP);
 
 export default router;

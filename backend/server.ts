@@ -11,26 +11,26 @@ import authMiddleware from './middleware/authMiddleware';
 
 dotenv.config();
 
-// Connect to MongoDB
+// Database connection
 connectDB();
 
 const app: Application = express();
 const PORT = process.env.PORT || 8000;
 
-// Middleware
+// Global middleware
 app.use(express.json());
-// CORS configuration - allow multiple origins
+// CORS setup
 const allowedOrigins = [
     'http://localhost:5173',
     process.env.FRONTEND_URL
-].filter(Boolean); // Remove undefined values
+].filter(Boolean);
 
 app.use(cors({
     origin: function (origin, callback) {
-        // Allow requests with no origin (like mobile apps or Postman)
+        // Allow non-browser requests (mobile/postman)
         if (!origin) return callback(null, true);
 
-        // Check if origin is in allowed list or ends with .vercel.app
+        // Check against allowed origins
         if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith('.vercel.app')) {
             callback(null, true);
         } else {
@@ -38,7 +38,7 @@ app.use(cors({
             callback(new Error('Not allowed by CORS'));
         }
     },
-    credentials: true // Allow cookies to be sent
+    credentials: true
 }));
 app.use(cookieParser());
 
@@ -47,11 +47,11 @@ app.use('/api/health-check', healthCheckRoute);
 app.use('/api/login', loginRoute);
 app.use('/api/geolocation', geolocationRoute);
 
-// Protected Routes (require authentication)
+// Protected Routes
 app.use('/api/history', authMiddleware, historyRoute);
 
 // Start server (Vercel handles this differently in serverless)
-// Start server (only if not running in Vercel)
+// Start server if not on Vercel
 if (!process.env.VERCEL) {
     app.listen(PORT, () => {
         console.log(`Server running on port ${PORT}`);
