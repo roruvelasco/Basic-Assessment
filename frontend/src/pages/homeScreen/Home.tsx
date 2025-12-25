@@ -7,6 +7,7 @@ import { showError, showSuccess, showInfo } from '../../components/notifications
 import LocationCard from '../../components/LocationCard';
 import LocationMap from '../../components/LocationMap';
 import HistoryList from '../../components/HistoryList';
+import AnimatedBackground from '../../components/AnimatedBackground';
 import type { IGeolocation } from '../../interfaces/IGeolocation';
 
 interface HomeProps {
@@ -107,7 +108,11 @@ const Home: React.FC<HomeProps> = ({ onLogout }) => {
 
     const handleLogout = async () => {
         await authService.logout();
-        onLogout();
+        showSuccess('Goodbye!', 'You have been logged out');
+        // small delay so user sees the notification
+        setTimeout(() => {
+            onLogout();
+        }, 500);
     };
 
     // when user clicks a history item, show that location
@@ -138,11 +143,7 @@ const Home: React.FC<HomeProps> = ({ onLogout }) => {
 
     return (
         <div className="min-h-screen bg-slate-900 p-[clamp(1rem,4vw,1.5rem)] relative overflow-hidden">
-            {/* background glow */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute w-96 h-96 bg-indigo-500 rounded-full blur-[100px] opacity-30 -top-48 -right-24" />
-                <div className="absolute w-72 h-72 bg-purple-500 rounded-full blur-[100px] opacity-30 -bottom-36 -left-24" />
-            </div>
+            <AnimatedBackground />
 
             <div className="max-w-4xl mx-auto relative z-10">
                 {/* header - title and logout always on same row */}

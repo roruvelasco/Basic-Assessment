@@ -6,9 +6,9 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 // use react-icons location pin
-const createPurpleIcon = () => {
+const createRedIcon = () => {
     const iconHtml = renderToString(
-        <ImLocation size={36} color="#8B5CF6" />
+        <ImLocation size={36} color="#DC2626" />
     );
     
     return L.divIcon({
@@ -20,7 +20,7 @@ const createPurpleIcon = () => {
     });
 };
 
-const purpleIcon = createPurpleIcon();
+const redIcon = createRedIcon();
 
 interface LocationMapProps {
     latitude: number | null;
@@ -74,7 +74,7 @@ const LocationMap: React.FC<LocationMapProps> = ({
                 
                 <MapRecenter lat={latitude} lng={longitude} />
                 
-                <Marker position={[latitude, longitude]} icon={purpleIcon}>
+                <Marker position={[latitude, longitude]} icon={redIcon}>
                     <Popup>
                         <div className="text-sm">
                             <p className="font-bold text-gray-900">{ip}</p>

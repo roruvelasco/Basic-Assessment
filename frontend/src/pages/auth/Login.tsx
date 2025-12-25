@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Layers, Eye, EyeOff } from 'lucide-react';
+import { Globe, Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import { authService } from '../../services/authService';
 import { showError, showSuccess } from '../../components/notifications/NotificationService';
+import AnimatedBackground from '../../components/AnimatedBackground';
 
 interface LoginProps {
     onLoginSuccess: () => void;
@@ -21,7 +22,6 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
             await authService.login({ email, password });
             showSuccess('Welcome!', 'Login successful');
             
-            // small delay so user sees the success toast
             setTimeout(() => {
                 onLoginSuccess();
             }, 500);
@@ -39,62 +39,70 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
 
     return (
         <div className="min-h-screen flex items-center justify-center p-[clamp(1rem,4vw,1.5rem)] relative overflow-hidden bg-slate-900">
-            {/* background glow */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute w-96 h-96 bg-indigo-500 rounded-full blur-[100px] opacity-40 -top-48 -right-24 animate-pulse" />
-                <div className="absolute w-72 h-72 bg-purple-500 rounded-full blur-[100px] opacity-40 -bottom-36 -left-24 animate-pulse" />
-            </div>
+            <AnimatedBackground />
 
             <div className="w-full max-w-md relative z-10">
-                {/* logo + title */}
+                {/* logo + branding */}
                 <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full mb-6 shadow-lg shadow-indigo-500/30">
-                        <Layers className="w-10 h-10 text-white" />
+                    <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-indigo-500 via-purple-500 to-indigo-600 rounded-2xl mb-6 shadow-2xl shadow-indigo-500/40 rotate-3 hover:rotate-0 transition-transform duration-300">
+                        <Globe className="w-10 h-10 text-white" />
                     </div>
-                    <h1 className="text-[clamp(1.5rem,6vw,1.875rem)] font-semibold text-white mb-2">Welcome Back</h1>
-                    
+                    <h1 className="text-[clamp(1.75rem,6vw,2.25rem)] font-bold text-white mb-2">
+                        Welcome Back
+                    </h1>
+                    <p className="text-slate-400 text-[clamp(0.875rem,3vw,1rem)]">
+                        Sign in to access IP Geolocation
+                    </p>
                 </div>
 
-                {/* login form card */}
-                <div className="bg-slate-800/80 border border-slate-700 rounded-2xl p-[clamp(1.5rem,5vw,2rem)] shadow-2xl backdrop-blur-sm">
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* email */}
-                        <div className="space-y-4">
-                            <label htmlFor="email" className="block text-sm font-medium text-white mb-3">
-                                Email
+                {/* login card */}
+                <div className="bg-slate-800/60 border border-slate-700/50 rounded-2xl p-[clamp(1.5rem,5vw,2rem)] shadow-2xl backdrop-blur-md">
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        {/* email field */}
+                        <div>
+                            <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">
+                                Email Address
                             </label>
-                            <input
-                                id="email"
-                                type="email"
-                                placeholder="Enter your email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                                autoComplete="email"
-                                className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all"
-                            />
+                            <div className="relative">
+                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">
+                                    <Mail className="w-5 h-5" />
+                                </div>
+                                <input
+                                    id="email"
+                                    type="email"
+                                    placeholder="you@example.com"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                    autoComplete="email"
+                                    className="w-full pl-12 pr-4 py-3 bg-slate-900/80 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                                />
+                            </div>
                         </div>
 
-                        {/* password */}
-                        <div className="space-y-4">
-                            <label htmlFor="password" className="block text-sm font-medium text-white mb-3">
+                        {/* password field */}
+                        <div>
+                            <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-2">
                                 Password
                             </label>
                             <div className="relative">
+                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">
+                                    <Lock className="w-5 h-5" />
+                                </div>
                                 <input
                                     id="password"
                                     type={showPassword ? 'text' : 'password'}
-                                    placeholder="Enter your password"
+                                    placeholder="••••••••"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
                                     autoComplete="current-password"
-                                    className="w-full px-4 py-3 pr-12 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                                    className="w-full pl-12 pr-12 py-3 bg-slate-900/80 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-indigo-400 transition-colors p-1"
                                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                                 >
                                     {showPassword ? (
@@ -106,11 +114,11 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
                             </div>
                         </div>
 
-                        {/* submit */}
+                        {/* submit button */}
                         <button
                             type="submit"
                             disabled={!isFormValid || isLoading}
-                            className="w-full py-3 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold rounded-lg shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center justify-center gap-2"
+                            className="w-full py-3.5 mt-2 bg-gradient-to-r from-indigo-500 via-indigo-600 to-purple-600 hover:from-indigo-600 hover:via-indigo-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-xl shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center justify-center"
                         >
                             {isLoading ? (
                                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -119,9 +127,19 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
                             )}
                         </button>
                     </form>
+
+                    {/* demo credentials hint */}
+                    <div className="mt-6 pt-5 border-t border-slate-700/50">
+                        <p className="text-center text-slate-500 text-sm">
+                            Demo: <span className="text-slate-400">sample@gmail.com</span> / <span className="text-slate-400">sample123</span>
+                        </p>
+                    </div>
                 </div>
 
-                
+                {/* footer */}
+                <p className="text-center text-slate-600 text-sm mt-6">
+                    IP Geolocation Tracker
+                </p>
             </div>
         </div>
     );
