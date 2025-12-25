@@ -21,7 +21,6 @@ app.use(express.json());
 // CORS configuration - allow multiple origins
 const allowedOrigins = [
     'http://localhost:5173',
-
     process.env.FRONTEND_URL
 ].filter(Boolean); // Remove undefined values
 
@@ -30,9 +29,11 @@ app.use(cors({
         // Allow requests with no origin (like mobile apps or Postman)
         if (!origin) return callback(null, true);
 
-        if (allowedOrigins.indexOf(origin) !== -1) {
+        // Check if origin is in allowed list or ends with .vercel.app
+        if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith('.vercel.app')) {
             callback(null, true);
         } else {
+            console.error('CORS blocked:', origin);
             callback(new Error('Not allowed by CORS'));
         }
     },
@@ -48,9 +49,12 @@ app.use('/api/login', loginRoute);
 app.use('/api/history', authMiddleware, historyRoute);
 
 // Start server (Vercel handles this differently in serverless)
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+// Start server (only if not running in Vercel)
+if (!process.env.VERCEL) {
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+}
 
 // Export for Vercel serverless
 export default app;
