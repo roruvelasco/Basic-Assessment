@@ -20,7 +20,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
 
         try {
             await authService.login({ email, password });
-            showSuccess('Success', 'Login successful');
+            showSuccess('', 'Login successful');
             
             setTimeout(() => {
                 onLoginSuccess();

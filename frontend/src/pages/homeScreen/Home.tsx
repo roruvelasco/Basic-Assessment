@@ -81,7 +81,7 @@ const Home: React.FC<HomeProps> = ({ onLogout }) => {
                     timezone: location.timezone
                 });
                 setHistoryRefreshTrigger(prev => prev + 1);
-                showSuccess('Search Complete', 'Location found');
+                showSuccess('', 'Location found');
             } catch {
                 showInfo('Search Complete', 'Location found (history save failed)');
             }
@@ -108,7 +108,7 @@ const Home: React.FC<HomeProps> = ({ onLogout }) => {
 
     const handleLogout = async () => {
         await authService.logout();
-        showSuccess('Logged Out', 'Successfully logged out!');
+        showSuccess('', 'Successfully logged out!');
         // small delay so user sees the notification
         setTimeout(() => {
             onLogout();
