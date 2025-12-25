@@ -1,6 +1,5 @@
 # IP Geolocation Tracker 
 
-![App Screenshot](docs/screenshots/app-preview.png)
 
 ## 📸 Screenshots
 
