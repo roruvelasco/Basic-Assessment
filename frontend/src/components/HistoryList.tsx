@@ -75,7 +75,7 @@ const HistoryList: React.FC<HistoryListProps> = memo(({ refreshTrigger, onSelect
         try {
             const idsToDelete = Array.from(selectedIds);
             const result = await historyService.deleteHistories(idsToDelete);
-            showSuccess('', `Removed ${result.deletedCount} items`);
+            showSuccess('', `Removed ${result.deletedCount} ${result.deletedCount === 1 ? 'item' : 'items'}`);
             setHistory(prev => prev.filter(h => !selectedIds.has(h._id)));
             setSelectedIds(new Set());
         } catch (err) {
